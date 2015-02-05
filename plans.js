@@ -277,7 +277,7 @@ function startMap(run, plan) {
   var fns = run[0];
   var wait, values;
   var e0, eN;
-  run.plan = plan;
+  run.plan = plan = plan || NOTHING;
   run.base = plan.base || basePlan;
   if (input instanceof Array) {
     wait = input.length;
@@ -332,7 +332,7 @@ function startList(run, plan) {
   var fns = run[0];
   var wait, values, keys, map;
   var e0, eN;
-  run.plan = plan;
+  run.plan = plan = plan || NOTHING;
   run.base = plan.base || basePlan;
   if (!(input instanceof Array)) {
     map = input;
