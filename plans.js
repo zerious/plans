@@ -101,7 +101,7 @@ var response = http.ServerResponse.prototype;
 response.error = response.error || function (e) {
   this.writeHead(500, {'content-type': 'text/html'});
   this.end('<h1>Internal Server Error</h1>');
-  logger.error(e.stack || e);
+  log.error(e.stack || e);
 };
 
 /**
