@@ -110,6 +110,35 @@ response.error = response.error || function (e) {
 var ignore = plans.ignore = function () {};
 
 /**
+ * Generate an errback function with optional properties, to be used as a plan.
+ */
+plans.errback = function (properties) {
+  var fn;
+  if (typeof properties == 'fn') {
+    fn = properties;
+  }
+  else {
+    fn = function (error, result) {
+      if (error && this.error) {
+        this.error(error);
+      }
+      else if (this.ok) {
+        this.ok(result);
+      }
+      if (this.done) {
+        this.done(error, result);
+      }
+    };
+    if (properties) {
+      for (var property in properties) {
+        fn[property] = properties[property];
+      }
+    }
+  }
+  return fn;
+};
+
+/**
  * Add a function to be run before an existing plan method.
  */
 plans.before = function (plan, key, fn) {
@@ -150,7 +179,26 @@ function startRun(run, plan) {
   run.state = WAITING;
   run.plan = plan = plan || NOTHING;
   run.base = plan.base || basePlan;
+  run.asyncStack = asyncStack;
   return run;
+}
+
+/**
+ * Add the original call stack to an error for async errors.
+ */
+function asyncStack(error) {
+  var e = new Error();
+  try {
+    throw e;
+  }
+  catch (e) {
+    var pattern = /[^\n]+\n[^\n]+\n[^\n]+/;
+    var br = '         --------------------';
+    var stack = (e.stack || '').replace(pattern, br);
+    var pos = stack.search(/\n/g)[2] || 5;
+    Log(stack.search(/\n/g));
+    error.stack = (error.stack || '') + '\n' + stack.substr(pos);
+  }
 }
 
 /**
