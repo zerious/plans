@@ -1,37 +1,36 @@
 // Mock the filesystem.
-var fs = require('fs');
-var fsCopy = {};
+var fs = require('fs')
+var fsCopy = {}
 for (var property in fs) {
-  fsCopy[property] = fs[property];
+  fsCopy[property] = fs[property]
 }
 
 var files = {
   'assets/ok.json': '{"success": true}',
   'assets/fail.json': '{fail}'
-};
+}
 
 fs.readFile = function (path, errBack) {
-  var string = files[path];
+  var string = files[path]
   if (string) {
-    errBack(null, new Buffer(string, 'utf8'));
+    errBack(null, new Buffer(string, 'utf8'))
+  } else {
+    throw new Error('File not found')
   }
-  else {
-    throw new Error('File not found');
-  }
-};
+}
 
 // Eat dogfood.
-var plans = require('../plans');
+var plans = require('../plans')
 
 // Get tests.
-var flow = require('./flow');
-var parallel = require('./parallel');
+var flow = require('./flow')
+var parallel = require('./parallel')
 var finish = function () {
-  console.log('');
-};
+  console.log('')
+}
 
 plans.each([flow, parallel, finish], {
   fail: function (e) {
-    console.error(e);
+    console.error(e)
   }
-});
+})
